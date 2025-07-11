@@ -1,40 +1,39 @@
 "use client"
 
-import * as React from "react"
-import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
+import { Moon, Sun } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+export default function ThemeToggle() {
+  const { setTheme, theme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
-export function ModeToggle() {
-  const { setTheme } = useTheme()
+  if (!mounted) return null
+
+  const isDark = resolvedTheme === "dark"
+
+  const handleToggle = () => {
+    const newTheme = isDark ? "light" : "dark"
+    console.log("Switching theme from", resolvedTheme, "to", newTheme)
+    setTheme(newTheme)
+  }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <button
+      onClick={handleToggle}
+      className={`w-12 h-6 rounded-full flex items-center px-1 transition-colors duration-300
+        ${isDark ? "bg-blue-600" : "bg-gray-300"}`}
+    >
+      <div
+        className={`w-4 h-4 rounded-full bg-white flex items-center justify-center text-xs text-black shadow-md transition-all duration-300
+          ${isDark ? "translate-x-6" : "translate-x-0"}`}
+      >
+        {isDark ? <Moon size={12} /> : <Sun size={12} />}
+      </div>
+    </button>
   )
 }
