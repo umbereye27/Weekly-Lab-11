@@ -1,26 +1,26 @@
-"use client"
+"use client";
 
-import { useTheme } from "next-themes"
-import { useEffect, useState } from "react"
-import { Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 
 export default function ThemeToggle() {
-  const { setTheme, theme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  
+  const { setTheme, theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
-  if (!mounted) return null
+  if (!mounted) return null;
 
-  const isDark = resolvedTheme === "dark"
+  const isDark = resolvedTheme === "dark";
 
   const handleToggle = () => {
-    const newTheme = isDark ? "light" : "dark"
-    console.log("Switching theme from", resolvedTheme, "to", newTheme)
-    setTheme(newTheme)
-  }
+    const newTheme = isDark ? "light" : "dark";
+    console.log("Switching theme from", resolvedTheme, "to", newTheme);
+    setTheme(newTheme);
+  };
 
   return (
     <button
@@ -35,5 +35,5 @@ export default function ThemeToggle() {
         {isDark ? <Moon size={12} /> : <Sun size={12} />}
       </div>
     </button>
-  )
+  );
 }

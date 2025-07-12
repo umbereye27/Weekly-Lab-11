@@ -2,10 +2,11 @@
 
 import ThemeToggle from "@/components/ui/toggle-mode";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Navbar() {
+  const { data: session, status } = useSession();
   return (
     <header className="bg-background text-foreground">
       <div className="max-w-6xl mx-auto py-6 flex items-center justify-between">
@@ -47,24 +48,33 @@ export default function Navbar() {
           <Link href="/" className="hover:text-primary transition">
             Home
           </Link>
-          <Link href="/blog" className="hover:text-primary transition">
-            Blog
+          <Link href="/about" className="hover:text-primary transition">
+            About
           </Link>
-          <Link href="/single-post" className="hover:text-primary transition">
-            Single Post
-          </Link>
-          <Link href="/pages" className="hover:text-primary transition">
-            Pages
-          </Link>
-          <Link href="/contact" className="hover:text-primary transition">
-            Contact
-          </Link>
+          
         </nav>
 
-        {/* Search & Toggle */}
+        {/* Auth Buttons & Toggle */}
         <div className="flex items-center gap-3">
-          <Button>Register</Button>
-           <Button>Login</Button>
+          {status === "loading" ? (
+            <div className="h-9 w-16 bg-gray-200 rounded animate-pulse"></div>
+          ) : session ? (
+            <>
+              <span className="text-sm text-muted-foreground hidden md:block">
+                Welcome, {session.user?.name}
+              </span>
+              <Button
+                onClick={() => signOut({ callbackUrl: "/" })}
+                variant="outline"
+              >
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <Link href="/login">
+              <Button>Sign In</Button>
+            </Link>
+          )}
           <ThemeToggle />
         </div>
       </div>
