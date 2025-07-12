@@ -4,9 +4,16 @@ import ThemeToggle from "@/components/ui/toggle-mode";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { useSession, signOut } from "next-auth/react";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
   return (
     <header className="bg-background text-foreground">
       <div className="max-w-6xl mx-auto py-6 flex items-center justify-between">
@@ -51,33 +58,107 @@ export default function Navbar() {
           <Link href="/about" className="hover:text-primary transition">
             About
           </Link>
-          
         </nav>
 
         {/* Auth Buttons & Toggle */}
         <div className="flex items-center gap-3">
-          {status === "loading" ? (
-            <div className="h-9 w-16 bg-gray-200 rounded animate-pulse"></div>
-          ) : session ? (
-            <>
-              <span className="text-sm text-muted-foreground hidden md:block">
-                Welcome, {session.user?.name}
-              </span>
-              <Button
-                onClick={() => signOut({ callbackUrl: "/" })}
-                variant="outline"
-              >
-                Sign Out
-              </Button>
-            </>
-          ) : (
-            <Link href="/login">
-              <Button>Sign In</Button>
-            </Link>
-          )}
-          <ThemeToggle />
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={toggleMobileMenu}
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </Button>
+
+          {/* Desktop Auth */}
+          <div className="hidden md:flex items-center gap-3">
+            {status === "loading" ? (
+              <div className="h-9 w-16 bg-gray-200 rounded animate-pulse"></div>
+            ) : session ? (
+              <>
+                <span className="text-sm text-muted-foreground">
+                  Welcome, {session.user?.name}
+                </span>
+                <Button
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  variant="outline"
+                >
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Link href="/login">
+                <Button>Sign In</Button>
+              </Link>
+            )}
+            <ThemeToggle />
+          </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-background border-t border-border">
+          <div className="max-w-6xl mx-auto px-6 py-4 space-y-4">
+            {/* Mobile Navigation Links */}
+            <nav className="flex flex-col space-y-3">
+              <Link
+                href="/"
+                className="hover:text-primary transition py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link
+                href="/about"
+                className="hover:text-primary transition py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                About
+              </Link>
+            </nav>
+
+            {/* Mobile Auth Section */}
+            <div className="flex flex-col space-y-3 pt-4 border-t border-border">
+              {status === "loading" ? (
+                <div className="h-9 w-full bg-gray-200 rounded animate-pulse"></div>
+              ) : session ? (
+                <>
+                  <span className="text-sm text-muted-foreground">
+                    Welcome, {session.user?.name}
+                  </span>
+                  <Button
+                    onClick={() => {
+                      signOut({ callbackUrl: "/" });
+                      setIsMobileMenuOpen(false);
+                    }}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button className="w-full">Sign In</Button>
+                </Link>
+              )}
+
+              {/* Mobile Theme Toggle */}
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-sm text-muted-foreground">Theme</span>
+                <ThemeToggle />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
