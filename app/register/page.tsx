@@ -105,9 +105,9 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-16">
+    <div className="  container mx-auto px-4 py-16">
       <div className="max-w-md mx-auto">
-        <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+        <Card className="shadow-2xl border-0  bg-background text-foreground backdrop-blur-sm">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Create Account

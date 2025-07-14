@@ -14,35 +14,9 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 
-export function CardDemo() {
+export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
-  const handleCredentialSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
-
-    try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError("Invalid email or password");
-      } else {
-        window.location.href = "/dashboard";
-      }
-    } catch (error) {
-      setError("Sign in failed. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -50,6 +24,7 @@ export function CardDemo() {
       await signIn("google", { callbackUrl: "/dashboard" });
     } catch (error) {
       console.error("Google sign in error:", error);
+      setError("Failed to sign in with Google");
     } finally {
       setIsLoading(false);
     }
@@ -60,19 +35,36 @@ export function CardDemo() {
       <CardHeader>
         <CardTitle>Login to your account</CardTitle>
         <CardDescription>
-          Enter your credentials or use Google to sign in
+          Sign in with your credentials or use Google
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <form onSubmit={handleCredentialSignIn} className="space-y-4">
+        <form
+          action={async (formData) => {
+            setIsLoading(true);
+            setError("");
+            try {
+              await signIn("credentials", {
+                email: formData.get("email"),
+                password: formData.get("password"),
+                redirectTo: "/dashboard",
+              });
+            } catch (error) {
+              console.error("Sign in error:", error);
+              setError("Sign in failed. Please try again.");
+            } finally {
+              setIsLoading(false);
+            }
+          }}
+          className="space-y-4"
+        >
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="m@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -80,10 +72,9 @@ export function CardDemo() {
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
+              name="password"
               type="password"
               placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
